@@ -1,4 +1,6 @@
-# autolms
+# Autolms
+
+Script for automating D.Y Patil LMS
 
 ### Installation and deployment
 
