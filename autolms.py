@@ -6,27 +6,34 @@ import getpass
 import os
 cwd = os.getcwd()
 
-def click_all(driver,subject_no):
-    driver.find_element_by_xpath("//tbody/tr[{}]//td[4]/a".format(subject_no)).click()
-    time.sleep(5)
-    driver.switch_to.window(driver.window_handles[1])
-    all_links = driver.find_elements_by_xpath("//li[starts-with(@id,'module')]/div/div/div[2]/div/a")
+def click_all(driver,subject_nos):
+    if subject_nos[0] == 0:
+        subject_nos = [p for p in range(1,int(input("Enter total number of subjects:")))]
 
-    i = 0
-    for link in all_links:
-        link.send_keys(Keys.CONTROL + Keys.RETURN)
+
+    for subject_no in subject_nos:
+            
+        driver.find_element_by_xpath("//tbody/tr[{}]//td[4]/a".format(subject_no)).click()
+        time.sleep(5)
         driver.switch_to.window(driver.window_handles[1])
-        i = i +1
-        if i == max_windows or link == all_links[len(all_links)-1]:
-            time.sleep(6)
-            while not i == 0:
-                driver.switch_to.window(driver.window_handles[i+1])
-                driver.close()
-                i = i - 1
-                time.sleep(0.5)
-            driver.switch_to.window(driver.window_handles[1])
+        all_links = driver.find_elements_by_xpath("//li[starts-with(@id,'module')]/div/div/div[2]/div/a")
 
-    driver.close()
+        i = 0
+        for link in all_links:
+            link.send_keys(Keys.CONTROL + Keys.RETURN)
+            driver.switch_to.window(driver.window_handles[1])
+            i = i +1
+            if i == max_windows or link == all_links[len(all_links)-1]:
+                time.sleep(6)
+                while not i == 0:
+                    driver.switch_to.window(driver.window_handles[i+1])
+                    driver.close()
+                    i = i - 1
+                    time.sleep(0.5)
+                driver.switch_to.window(driver.window_handles[1])
+
+        driver.switch_to.window(driver.window_handles[0])
+
 
 
 driver = webdriver.Chrome(cwd + "\\chromedriver.exe")
@@ -74,8 +81,15 @@ while True:
 
 cont = "y"
 while cont == "y" or cont == "Y":
+
+    subject_no = [0]
+    while True:
+        try:
+            subject_no = list(map(int,input("Enter list of subject numbers or enter 0 for all subjects:").split(",")))
+            break
+        except ValueError:
+            pass
     
-    subject_no = input("Enter subject no:")
     click_all(driver,subject_no)
     cont = input("Complete another subject?(y/n):")
     driver.switch_to.window(driver.window_handles[0])
